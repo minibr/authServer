@@ -1,6 +1,8 @@
 package com.rest1.domain.post.comment.controller;
 
 
+import com.rest1.domain.member.member.entity.Member;
+import com.rest1.domain.member.member.repository.MemberRepository;
 import com.rest1.domain.post.comment.entity.Comment;
 import com.rest1.domain.post.post.entity.Post;
 import com.rest1.domain.post.post.repository.PostRepository;
@@ -33,6 +35,9 @@ public class ApiV1CommentControllerTest {
     @Autowired
     private PostRepository postRepository;
 
+    @Autowired
+    private MemberRepository memberRepository;
+
     @Test
     @DisplayName("댓글 다건 조회 - 1번 글에 대한 댓글")
     void t1() throws Exception {
@@ -56,7 +61,10 @@ public class ApiV1CommentControllerTest {
                 .andExpect(jsonPath("$[0].id").value(3))
                 .andExpect(jsonPath("$[0].createDate").exists())
                 .andExpect(jsonPath("$[0].modifyDate").exists())
-                .andExpect(jsonPath("$[0].content").value("댓글 1-3"));
+                .andExpect(jsonPath("$[0].content").value("댓글 1-3"))
+                .andExpect(jsonPath("$[0].authorId").value(3))
+                .andExpect(jsonPath("$[0].authorName").value("유저1"))
+                .andExpect(jsonPath("$[0].postId").value(1));
 
     }
 
@@ -80,7 +88,10 @@ public class ApiV1CommentControllerTest {
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.createDate").exists())
                 .andExpect(jsonPath("$.modifyDate").exists())
-                .andExpect(jsonPath("$.content").value("댓글 1-1"));
+                .andExpect(jsonPath("$.content").value("댓글 1-1"))
+                .andExpect(jsonPath("$.authorId").value(3))
+                .andExpect(jsonPath("$.authorName").value("유저1"))
+                .andExpect(jsonPath("$.postId").value(1));
     }
 
     @Test
@@ -89,6 +100,7 @@ public class ApiV1CommentControllerTest {
 
         long targetPostId = 1;
         String content = "새로운 댓글";
+        Member author = memberRepository.findByUsername("user1").get();
 
         ResultActions resultActions = mvc
                 .perform(
@@ -111,7 +123,11 @@ public class ApiV1CommentControllerTest {
                 .andExpect(jsonPath("$.data.commentDto.id").value(6))
                 .andExpect(jsonPath("$.data.commentDto.createDate").exists())
                 .andExpect(jsonPath("$.data.commentDto.modifyDate").exists())
+                .andExpect(jsonPath("$.data.commentDto.authorId").value(author.getId()))
+                .andExpect(jsonPath("$.data.commentDto.authorName").value(author.getName()))
                 .andExpect(jsonPath("$.data.commentDto.content").value(content));
+
+
     }
 
     @Test
