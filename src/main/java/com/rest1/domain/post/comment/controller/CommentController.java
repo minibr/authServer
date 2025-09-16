@@ -1,3 +1,4 @@
+/*
 package com.rest1.domain.post.comment.controller;
 
 import com.rest1.domain.post.comment.entity.Comment;
@@ -88,3 +89,4 @@ public class CommentController {
         return "redirect:/posts/" + postId;
     }
 }
+*/

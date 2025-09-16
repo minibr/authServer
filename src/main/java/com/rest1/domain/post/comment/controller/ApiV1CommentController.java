@@ -1,5 +1,7 @@
 package com.rest1.domain.post.comment.controller;
 
+import com.rest1.domain.member.member.entity.Member;
+import com.rest1.domain.member.member.service.MemberService;
 import com.rest1.domain.post.comment.dto.CommentDto;
 import com.rest1.domain.post.comment.entity.Comment;
 import com.rest1.domain.post.post.entity.Post;
@@ -23,6 +25,7 @@ import java.util.List;
 public class ApiV1CommentController {
 
     private final PostService postService;
+    private final MemberService memberService;
 
     @GetMapping(value = "/{postId}/comments")
     @Operation(summary = "다건 조회")
@@ -84,8 +87,9 @@ public class ApiV1CommentController {
             @RequestBody @Valid CommentWriteReqBody reqBody
     ) {
 
+        Member actor = memberService.findByUsername("user1").get();
         Post post = postService.findById(postId).get();
-        Comment comment = postService.writeComment(post, reqBody.content);
+        Comment comment = postService.writeComment(actor, post, reqBody.content);
 
         postService.flush();
 

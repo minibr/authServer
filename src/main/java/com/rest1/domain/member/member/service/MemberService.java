@@ -5,6 +5,8 @@ import com.rest1.domain.member.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class MemberService {
@@ -18,5 +20,9 @@ public class MemberService {
     public Member join(String username, String password, String nickname) {
         Member member = new Member(username, password, nickname);
         return memberRepository.save(member);
+    }
+
+    public Optional<Member> findByUsername(String username) {
+        return memberRepository.findByUsername(username);
     }
 }
