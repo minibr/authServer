@@ -24,7 +24,8 @@ public class Post extends BaseEntity {
     @OneToMany(mappedBy = "post", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval=true, fetch = FetchType.LAZY)
     private List<Comment> comments = new ArrayList<>();
 
-    public Post(String title, String content) {
+    public Post(Member author, String title, String content) {
+        this.author = author;
         this.title = title;
         this.content = content;
     }
