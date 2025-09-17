@@ -6,6 +6,7 @@ import com.rest1.domain.post.post.dto.PostDto;
 import com.rest1.domain.post.post.entity.Post;
 import com.rest1.domain.post.post.service.PostService;
 import com.rest1.global.exception.ServiceException;
+import com.rest1.global.rq.Rq;
 import com.rest1.global.rsData.RsData;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,6 +27,7 @@ public class ApiV1PostController {
 
     private final PostService postService;
     private final MemberService memberService;
+    private final Rq rq;
 
 
     @GetMapping
@@ -44,7 +46,6 @@ public class ApiV1PostController {
     public PostDto getItem(
             @PathVariable Long id
     ) {
-
         Post post = postService.findById(id).get();
         return new PostDto(post);
 
@@ -56,7 +57,12 @@ public class ApiV1PostController {
     public RsData<Void> deleteItem(
             @PathVariable Long id
     ) {
+
+        Member actor = rq.getActor();
         Post post = postService.findById(id).get();
+
+        if(!actor.equals(post.getAuthor())) throw new ServiceException("403-1", "삭제 권한이 없습니다.");
+
         postService.delete(post);
 
         return new RsData<Void>(
@@ -86,12 +92,10 @@ public class ApiV1PostController {
     @Transactional
     @Operation(summary = "글 작성")
     public RsData<PostWriteResBody> createItem(
-            @RequestBody @Valid PostWriteReqBody reqBody,
-            @NotBlank @Size(min=30, max=40) String apiKey
+            @RequestBody @Valid PostWriteReqBody reqBody
     ) {
 
-        Member actor = memberService.findByApiKey(apiKey).orElseThrow(() -> new ServiceException("401-1", "API 키가 올바르지 않습니다."));
-
+        Member actor = rq.getActor();
         Post post = postService.write(actor, reqBody.title, reqBody.content);
 
         return new RsData<>(
@@ -123,7 +127,13 @@ public class ApiV1PostController {
             @RequestBody @Valid PostModifyReqBody reqBody
     ) {
 
+        Member actor = rq.getActor();
         Post post = postService.findById(id).get();
+
+        // 권한 체크
+        if(!actor.equals(post.getAuthor())) throw new ServiceException("403-1", "수정 권한이 없습니다.");
+
+        // 수정 로직
         postService.modify(post, reqBody.title, reqBody.content);
 
         return new RsData(
