@@ -63,6 +63,8 @@ public class ApiV1MemberControllerTest {
                 .andExpect(jsonPath("$.data.memberDto.modifyDate").exists())
                 .andExpect(jsonPath("$.data.memberDto.name").value(nickname));
     }
+
+
     @Test
     @DisplayName("회원 가입, 이미 존재하는 username으로 가입 - user1로 가입")
     void t2() throws Exception {
@@ -130,4 +132,6 @@ public class ApiV1MemberControllerTest {
 //                .andExpect(jsonPath("$.data.memberDto.name").value(member.getName()));
 
     }
+
+
 }
